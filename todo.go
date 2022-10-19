@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"time"
 )
 
@@ -25,5 +26,24 @@ func (t *Todos) Add(task string) {
 }
 
 func (t *Todos) Complete(index int) error {
+	ls := *t
+	if index <= 0 || len(ls) > 0 {
+		return errors.New("Index not valid")
+	}
+
+	ls[index].CompletedAt = time.Now()
+	ls[index].Done = true
+
+	return nil
+}
+
+func (t *Todos) Delete(index int) error {
+	ls := *t
+	if index <= 0 || len(ls) > 0 {
+		return errors.New("Index not valid")
+	}
+
+	*t = append(ls[:index-1], ls[index:]...)
+
 	return nil
 }
