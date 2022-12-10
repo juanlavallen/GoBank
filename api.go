@@ -14,6 +14,7 @@ type APIServer struct {
 }
 
 type ApiError struct {
+	Data     any
 	HasError bool
 	Message  string
 }
@@ -30,6 +31,7 @@ func makeHttpHandleFunc(f apiFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
 			writeJSON(w, http.StatusBadRequest, ApiError{
+				Data:     nil,
 				HasError: true,
 				Message:  err.Error(),
 			})
@@ -54,19 +56,19 @@ func (s *APIServer) Run() {
 }
 
 func (s *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 		return s.handleGetAccount(w, r)
 	}
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		return s.handleCreateAccount(w, r)
 	}
 
-	if r.Method == "DELETE" {
+	if r.Method == http.MethodDelete {
 		return s.handleDeleteAccount(w, r)
 	}
 
-	return fmt.Errorf("Methods not allowed %s", r.Method)
+	return fmt.Errorf("Method not allowed %s", r.Method)
 }
 
 func (s *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
