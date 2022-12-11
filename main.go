@@ -1,5 +1,19 @@
 package main
 
+import (
+	"log"
+)
+
 func main() {
-	NewAPIServer(":9090").Run()
+	store, err := NewPostgresStore()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := store.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	NewAPIServer(":9090", store).Run()
 }
